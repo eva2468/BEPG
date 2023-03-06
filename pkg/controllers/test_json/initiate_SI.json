@@ -1,0 +1,21 @@
+{
+    "card_no": "6528510000121212",
+    "card_expiry": "102020",
+    "card_cvd2": "232",
+    "card_holder_status": "NW",
+    "Amount": "50000",
+    "merchantName": "shopping sitename",
+    "mcc":"5999",
+    "card_acceptor_id":"423444234224123",
+    "ipAddress": "127.0.0.1",
+    "language_code": "en",
+    "requestID" : "012ABD3983ADFDEE27483",
+    "startDate": "01012020",
+    "endDate": "01012021",
+    "noOfSITxns": "12",
+    "minAmount": "500000",
+    "maxAmount": "1500025",
+    "preferredInitiationDate": "05",
+    "alertPreference" : "SMS",
+    "currency_code": "356"
+    }

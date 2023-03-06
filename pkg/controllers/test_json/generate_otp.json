@@ -1,0 +1,13 @@
+{
+    "card_no": "5213123412341234",
+    "card_exp_date": "092023",
+    "card_cvd": "123",
+    "card_holder_status": "NW",
+    "merchantName": "Doing Business As Name",
+    "amount": "100.25",
+    "mcc": "5999",
+    "currency_code": "356",
+    "shopper_ip_address":"203.11.11.12",
+    "language_code": "EN",
+    "requestID": "000000720200156123455000123"
+    }
