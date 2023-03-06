@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"fmt"
 	"io"
+	"strconv"
 
 	"github.com/eva2468/bepg/pkg/config"
 	"github.com/jinzhu/gorm"
@@ -21,11 +22,11 @@ type Header struct {
 type Card struct {
 	gorm.Model
 	Card_Header Header
-	Card_no     string `gorm:""json:"card_no"`
+	Card_no     string `gorm:"" json:"card_no"`
 }
 
 type CheckBinResponse struct {
-	Card_NO                     string `gorm:""json:"card_no"`
+	Card_NO                     string `gorm:"" json:"card_no"`
 	Status                      string
 	ErrorCode                   int64
 	ErrorMessage                string
@@ -39,7 +40,7 @@ type CheckBinResponse struct {
 
 type Generate_Otp_Request struct {
 	OTP_Header         Header
-	Card_No            string `gorm:"primarykey";json:"card_no"`
+	Card_No            string `gorm:"primarykey" json:"card_no"`
 	Card_Exp_date      string `json:"card_exp_date"`
 	Card_CVD           string `json:"card_cvd"`
 	Card_Holder_Status string `json:"card_holder_status"`
@@ -77,7 +78,7 @@ type Verify_Otp_Response struct {
 
 type InitiateSI_Request struct {
 	InitiateSI_Request_Header Header
-	Card_No                   string `gorm:"unique";primarykey";json:"card_no"`
+	Card_No                   string `gorm:"primarykey" json:"card_no"`
 	Card_Exp_date             string `json:"card_expiry"`
 	Card_CVD2                 string `json:"card_cvd2"`
 	Card_Holder_Status        string `json:"card_holder_status"`
@@ -130,10 +131,29 @@ type Merchant struct {
 
 type Complete_SIRegistration_Request struct {
 	Complete_SIRegistration_Request_Header Header
-	Merchant_SIRegistration_Request        Merchant
-	Partner_ID                             string
-	Tran_ID                                string
-	AuthenticationMode                     string
+	gorm.Model
+	Partner_ID                        string `json:"partner_id"`
+	Tran_ID                           string `json:"tran_id"`
+	AuthenticationMode                string `json:"authentication_mode"`
+	BrowserUserAgent                  string `json:"BrowserUserAgent"`
+	IpAddress                         string `json:"ipAddress"`
+	HttpAccept                        string `json:"httpAccept"`
+	Language_Code                     string `json:"language_code"`
+	Transaction_Type_Indicator        string `json:"transaction_type_indicator"`
+	TID                               string `json:"tid"`
+	Stan                              string `json:"stan"`
+	Tran_time                         string `json:"tran_time"`
+	Tran_Date                         string `json:"tran_date"`
+	Mcc                               string `json:"mcc"`
+	Acquirer_Institution_Country_Code string `json:"acquirer_institution_country_code"`
+	Retrieval_Ref_Number              string `json:"retrieval_ref_number"`
+	Card_Acceptor_ID                  string `json:"card_acceptor_id"`
+	Terminal_Owner_Name               string `json:"terminal_owner_name"`
+	Terminal_City                     string `json:"terminal_city"`
+	Terminal_State_Code               string `json:"terminal_state_code"`
+	Terminal_Country_Code             string `json:"terminal_country_code"`
+	Merchant_Postal_Code              string `json:"merchant_postal_code"`
+	Merchant_Telephone                string `json:"merchant_telephone"`
 }
 type Complete_SIRegistration_Response struct {
 	Status           string
@@ -269,13 +289,8 @@ func init() {
 	db.AutoMigrate(&CheckBinResponse{})
 	db.AutoMigrate(&Generate_Otp_Request{})
 	db.AutoMigrate(&InitiateSI_Request{})
-	//db.AutoMigrate(&Card_check{})
+	db.AutoMigrate(&Complete_SIRegistration_Request{})
 
-}
-
-type ModelInterface interface {
-	//CheckBin(*Card) *Card
-	FuncForTest(string) string
 }
 
 func (card_holder *Card) CheckBin() *Card {
@@ -352,6 +367,18 @@ func InitiateSI(New_SI *InitiateSI_Request) *InitiateSI_Response {
 	return &res
 }
 
+func CompleteSI(Complete_SI *Complete_SIRegistration_Request) *Complete_SIRegistration_Response {
+
+	var res Complete_SIRegistration_Response
+	db.NewRecord(Complete_SI)
+	db.Create(&Complete_SI)
+	res.SiRegistrationID = strconv.FormatUint(uint64(Complete_SI.ID), 10)
+	res.Status = "success"
+	res.ErrorCode = "0"
+	res.ErrorMsg = "nil"
+	return &res
+}
+
 func GetEmiStatus(card_No string) (*Check_EMIAvailibility_Response, *gorm.DB) {
 
 	var GetCard CheckBinResponse
@@ -367,4 +394,16 @@ func GetEmiStatus(card_No string) (*Check_EMIAvailibility_Response, *gorm.DB) {
 		res.ErrorMsg = "bin not enabled"
 	}
 	return &res, db
+}
+
+func Deregister_SI(card_No string) (*DeRegister_SI_Response, *gorm.DB) {
+
+	var Get_SI InitiateSI_Request
+	var Res_SI DeRegister_SI_Response
+	db := db.Where("card_no=?", card_No).Find(&Get_SI)
+	db.Where("card_no=?", card_No).Delete(&Get_SI)
+	Res_SI.Status = "Success"
+	Res_SI.ErrorCode = "0"
+	Res_SI.ErrorMsg = "nil"
+	return &Res_SI, db
 }

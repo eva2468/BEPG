@@ -10,49 +10,6 @@ import (
 
 var CardHolder models.Card
 
-/*
-func CheckBin_Auth(w http.ResponseWriter, r *http.Request) {
-
-	CreateCard := &models.Card{}
-	version := r.Header.Get("version")
-	caller_Id := r.Header.Get("caller_Id")
-	token := r.Header.Get("token")
-	user_Id := r.Header.Get("user_Id")
-	utils.ParseBody(r, CreateCard)
-	b := CreateCard.CheckBin()
-	CardDetail := GetCardAuth(b.Card_no) // For checking the validity of the card
-	if CardDetail.Status == 1 {
-		res, _ := json.Marshal(CardDetail)
-		w.Header().Set("version", version)
-		w.Header().Set("caller_Id", caller_Id)
-		w.Header().Set("token", token)
-		w.Header().Set("user_Id", user_Id)
-		w.WriteHeader(http.StatusOK)
-		w.Write(res)
-
-	} else {
-		w.Header().Set("version", version)
-		w.Header().Set("caller_Id", caller_Id)
-		w.Header().Set("token", token)
-		w.Header().Set("user_Id", user_Id)
-		w.WriteHeader(http.StatusConflict)
-
-	}
-
-}*/
-
-/*
-func GetCardAuth(card_no string) *models.Card_check {
-
-	card_No, err := strconv.ParseInt(card_no, 0, 0)
-	if err != nil {
-		fmt.Println("error while parsing")
-	}
-	CardDetail, _ := models.GetCardStatus(card_No)
-	return (CardDetail)
-
-}
-*/
 func Bepg_checkbin(w http.ResponseWriter, r *http.Request) {
 	CreateCard := &models.Card{}
 	Res_header := &models.Header{}
@@ -122,43 +79,6 @@ func Verify_otp(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func Bepg_authorize(w http.ResponseWriter, r *http.Request) {
-
-	//CreateCard := &models.Card{}
-	version := r.Header.Get("version")
-	caller_Id := r.Header.Get("caller_Id")
-	token := r.Header.Get("token")
-	user_Id := r.Header.Get("user_Id")
-	//utils.ParseBody(r, CreateCard)
-	//b := models.Generate_Otp()
-	/* otp */
-	//fmt.Println(b)
-	w.Header().Set("version", version)
-	w.Header().Set("caller_Id", caller_Id)
-	w.Header().Set("token", token)
-	w.Header().Set("user_Id", user_Id)
-	w.WriteHeader(http.StatusOK)
-
-}
-
-func Bepg_reverse(w http.ResponseWriter, r *http.Request) {
-
-	//CreateCard := &models.Card{}
-	version := r.Header.Get("version")
-	caller_Id := r.Header.Get("caller_Id")
-	token := r.Header.Get("token")
-	user_Id := r.Header.Get("user_Id")
-	//utils.ParseBody(r, CreateCard)
-	//b := models.Generate_Otp()
-	/* otp */
-	//fmt.Println(b)
-	w.Header().Set("version", version)
-	w.Header().Set("caller_Id", caller_Id)
-	w.Header().Set("token", token)
-	w.Header().Set("user_Id", user_Id)
-	w.WriteHeader(http.StatusOK)
-
-}
 func Initiate_SIRegistration(w http.ResponseWriter, r *http.Request) {
 	CreateSI := &models.InitiateSI_Request{}
 	Res_header := &models.Header{}
@@ -187,10 +107,65 @@ func Check_EMIAvailability(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func complete_SIRegistration(w http.ResponseWriter, r *http.Request) {
+func Complete_SIRegistration(w http.ResponseWriter, r *http.Request) {
+
+	CreateSI := &models.Complete_SIRegistration_Request{}
+	Res_header := &models.Header{}
+	utils.ParseBody(r, CreateSI)
+	Res_header.Version = r.Header.Get("version")
+	Res_header.Caller_ID = r.Header.Get("caller_Id")
+	Res_header.Token = r.Header.Get("token")
+	Res_header.User_ID = r.Header.Get("user_Id")
+	b := models.CompleteSI(CreateSI)
+	res, _ := json.Marshal(b)
+	w.Write(res)
 
 }
 
-func deregister_SI(w http.ResponseWriter, r *http.Request) {
+func Deregister_SI(w http.ResponseWriter, r *http.Request) {
+
+	DeRegister_si := &models.DeRegister_SI_Request{}
+	Res_header := &models.Header{}
+	utils.ParseBody(r, DeRegister_si)
+	Res_header.Version = r.Header.Get("version")
+	Res_header.Caller_ID = r.Header.Get("caller_Id")
+	Res_header.Token = r.Header.Get("token")
+	Res_header.User_ID = r.Header.Get("user_Id")
+	b, _ := models.Deregister_SI(DeRegister_si.Card_No)
+	res, _ := json.Marshal(b)
+	w.Write(res)
+}
+
+func Bepg_authorize(w http.ResponseWriter, r *http.Request) {
+
+	version := r.Header.Get("version")
+	caller_Id := r.Header.Get("caller_Id")
+	token := r.Header.Get("token")
+	user_Id := r.Header.Get("user_Id")
+	/*
+		logic
+	*/
+	w.Header().Set("version", version)
+	w.Header().Set("caller_Id", caller_Id)
+	w.Header().Set("token", token)
+	w.Header().Set("user_Id", user_Id)
+	w.WriteHeader(http.StatusOK)
+
+}
+
+func Bepg_reverse(w http.ResponseWriter, r *http.Request) {
+
+	version := r.Header.Get("version")
+	caller_Id := r.Header.Get("caller_Id")
+	token := r.Header.Get("token")
+	user_Id := r.Header.Get("user_Id")
+	/*
+		logic
+	*/
+	w.Header().Set("version", version)
+	w.Header().Set("caller_Id", caller_Id)
+	w.Header().Set("token", token)
+	w.Header().Set("user_Id", user_Id)
+	w.WriteHeader(http.StatusOK)
 
 }
